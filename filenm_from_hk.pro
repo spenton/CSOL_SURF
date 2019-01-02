@@ -1,0 +1,54 @@
+;+
+; NAME: filenm_from_hk
+;
+; PURPOSE:
+;   A function that generates a CSOL image name from a CSOL housekeeping array of structures
+
+;
+; INPUTS:
+;   A file path to a collection of CSOL images (stored as hex file)
+;   An array of structures of CSOL housekeeping data (produced in the procedure read_csol_metadatalog
+
+;
+; OPTIONAL INPUTS:
+; None
+;
+; KEYWORD PARAMETERS:
+;   None
+;
+; OUTPUTS:
+;   Returns a fully qualified image file name from a housekeeping entry
+;
+; OPTIONAL OUTPUTS:
+;   None
+;
+; PROCEDURES/FUNCTIONS CALLED:
+;   none
+;
+; RESTRICTIONS:
+;   None
+;
+; EXAMPLE:
+;   mypath='/Volumes/projects/Phase_Development/SOLSTICE_RI/Images/ELF_20180404/'
+;   filenm_arr=filenm_from_hk(mypath,csol_hk)
+;
+; MODIFICATION HISTORY: RCS_ID="$Id: filenm_from_hk.pro,v 1.1 2018/12/30 00:27:42 spenton Exp $"
+;   2018-04-11: JWH
+;-
+function filenm_from_hk,data_path,hk_struct
+
+  prefix='framedata_'
+  uu=long(hk_struct.(0))
+  datestr=strtrim(string(uu),2)
+  uu=long(hk_struct.(1))
+  uu=string(uu)
+  uu=strtrim(uu,2)
+  uu='000000'+uu
+  timestr = strmid(uu, 5 , /REVERSE_OFFSET )
+  suffix='.hex'
+
+  filenm_arr=data_path + prefix + datestr + '_' + timestr + suffix
+
+  return, filenm_arr
+
+end

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>EmbeddedEditorHidden:spenton</key>
+	<false/>
+	<key>ExpandedEditorWidth:spenton:displays([(0, 0), (1440, 900)])</key>
+	<integer>736</integer>
+	<key>ExpandedItems:spenton</key>
+	<array/>
+	<key>FileFilterMode:spenton</key>
+	<integer>0</integer>
+	<key>OpenDocuments:spenton</key>
+	<array/>
+	<key>OpenDocumentsExpanded</key>
+	<true/>
+	<key>OpenDocumentsSplitterProportion</key>
+	<real>0.60022779043280183</real>
+	<key>ProjectItemsExpanded</key>
+	<true/>
+	<key>ProjectViewVisible</key>
+	<true/>
+	<key>RecentItems:spenton</key>
+	<array/>
+	<key>ScratchpadItemsExpanded</key>
+	<true/>
+	<key>ScratchpadItemsVisible</key>
+	<true/>
+	<key>ShowSCMData:spenton</key>
+	<false/>
+	<key>ToolbarVisible:spenton</key>
+	<false/>
+	<key>ViewSplitterPosition:spenton</key>
+	<real>0.29971456527709961</real>
+	<key>WindowFrame:spenton:displays([(0, 0), (1440, 900)])</key>
+	<string>rect(22,0,900,1051)</string>
+</dict>
+</plist>

@@ -1,0 +1,12 @@
+{
+  "Name": "CSOL_SURF",
+  "Version": "0.0.1",
+  "Author": "Jerry Harder and Steven Penton",
+  "Date": "Jan 2, 2019",
+  "Dependencies": [
+    {
+      "Name": "IDL",
+      "Version": "^8.4"
+    }
+  ]
+}
