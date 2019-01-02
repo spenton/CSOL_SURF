@@ -3,6 +3,7 @@
   "Version": "0.0.1",
   "Author": "Jerry Harder and Steven Penton",
   "Date": "Jan 2, 2019",
+  "URL" : "https://github.com/spenton/CSOL_SURF.git"
   "Dependencies": [
     {
       "Name": "IDL",
