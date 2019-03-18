@@ -1,10 +1,15 @@
-head	1.1;
+head	1.2;
 access;
 symbols;
 locks
-	spenton:1.1; strict;
+	spenton:1.2; strict;
 comment	@# @;
 
+
+1.2
+date	2019.03.13.10.55.42;	author spenton;	state Exp;
+branches;
+next	1.1;
 
 1.1
 date	2018.12.30.00.27.42;	author spenton;	state Exp;
@@ -17,15 +22,47 @@ desc
 @
 
 
-1.1
+1.2
 log
-@Initial revision
+@added heade
+added header
 @
 text
-@FUNCTION Thermistor_RtoC, R
+@;+
+; NAME: Thermistor_RtoC
+;
+; PURPOSE:
   ; Function to convert input thermistor resistance [*] to temperature [C]
+;
+; INPUTS:
+;   Thermistor Resistance
+;
+; OPTIONAL INPUTS:
+;  Temperature (C)
+;
+; KEYWORD PARAMETERS:
+;   None
+;
+; OUTPUTS:
+;   Returns the wavelength (nm vacuum) from the pixel number
+;
+; OPTIONAL OUTPUTS:
+;   None
+;
+; PROCEDURES/FUNCTIONS CALLED:
+;   None
+;
+; RESTRICTIONS:
+;   None
+;
+; EXAMPLE:
+;   Tc=Thermistor_RtoC(R)
+;
+; MODIFICATION HISTORY: RCS_ID="$Id: muv_px2wvl.pro,v 1.1 2018/12/30 00:27:42 spenton Exp $"
+;   2018-04-11: JWH
+;-
+function Thermistor_RtoC, R
   ; From George
-  ; Initialize
   Tk = 273.15d
   a = 1.129241D-3           ; manufacturer's values for a 10K resistor
   b = 2.341077D-4
@@ -35,4 +72,18 @@ text
   ; is this the solution from the Steinhart & Hart Eqn ignoring T^5 term?
   return, degrees_C
 END
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d1 4
+a4 1
+FUNCTION Thermistor_RtoC, R
+d6 29
+a35 1
+  ; Initialize
 @

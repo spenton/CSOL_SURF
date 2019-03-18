@@ -1,10 +1,15 @@
-head	1.1;
+head	1.2;
 access;
 symbols;
 locks
-	spenton:1.1; strict;
+	spenton:1.2; strict;
 comment	@# @;
 
+
+1.2
+date	2019.03.13.10.55.42;	author spenton;	state Exp;
+branches;
+next	1.1;
 
 1.1
 date	2018.12.30.00.27.42;	author spenton;	state Exp;
@@ -17,9 +22,10 @@ desc
 @
 
 
-1.1
+1.2
 log
-@Initial revision
+@added heade
+added header
 @
 text
 @;***** Utilites *****
@@ -28,7 +34,6 @@ text
 ;
 ; PURPOSE:
 ;   A function that extracts xtract a Julian day from a CSOL housekeeping structure
-
 ;
 ; INPUTS:
 ;   An array of structures of CSOL housekeeping data (produced in the procedure read_csol_metadatalog
@@ -55,7 +60,7 @@ text
 ; EXAMPLE:
 ;   csol_jd=jd_from_hk(csol_hk, n_hkrec)
 ;
-; MODIFICATION HISTORY: RCS_ID="$Id$"
+; MODIFICATION HISTORY: RCS_ID="$Id: jd_from_hk.pro,v 1.1 2018/12/30 00:27:42 spenton Exp $"
 ;   2018-04-11: JWH
 ;-
 
@@ -80,4 +85,17 @@ function jd_from_hk, hk_struct, n_hkrec
 
   return, juld
 end
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@a6 1
+
+d33 1
+a33 1
+; MODIFICATION HISTORY: RCS_ID="$Id$"
 @

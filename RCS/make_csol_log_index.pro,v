@@ -1,10 +1,15 @@
-head	1.1;
+head	1.2;
 access;
 symbols;
 locks
-	spenton:1.1; strict;
+	spenton:1.2; strict;
 comment	@# @;
 
+
+1.2
+date	2019.03.13.10.55.42;	author spenton;	state Exp;
+branches;
+next	1.1;
 
 1.1
 date	2018.12.30.00.27.42;	author spenton;	state Exp;
@@ -17,9 +22,10 @@ desc
 @
 
 
-1.1
+1.2
 log
-@Initial revision
+@added heade
+added header
 @
 text
 @;+
@@ -27,7 +33,7 @@ text
 ;  make_csol_log_index
 ;
 ; PURPOSE:
-;   A prceedure to construct an index of CSOL housekeeping files stored as .SAV files.  Output is an array of structures that gives the
+;   A procedure to construct an index of CSOL housekeeping files stored as .SAV files.  Output is an array of structures that gives the
 ;   start and stop times of the housekeeping files and a complete path to the target image
 ;
 ; INPUTS:
@@ -53,7 +59,7 @@ text
 ;
 ; EXAMPLE:
 ;
-; MODIFICATION HISTORY: RCS_ID="$Id$"
+; MODIFICATION HISTORY: RCS_ID="$Id: make_csol_log_index.pro,v 1.1 2018/12/30 00:27:42 spenton Exp $"
 ;   2018-05-11: JWH
 ;-
 
@@ -77,4 +83,18 @@ pro make_csol_log_index
   filenm=get_surf_dir(/data)+'IDL_structure_files/csol_log_index.sav'
   save,file=filenm,csol_log_index
 end
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d6 1
+a6 1
+;   A prceedure to construct an index of CSOL housekeeping files stored as .SAV files.  Output is an array of structures that gives the
+d32 1
+a32 1
+; MODIFICATION HISTORY: RCS_ID="$Id$"
 @
