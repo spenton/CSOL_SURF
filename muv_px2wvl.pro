@@ -7,7 +7,6 @@
 ;
 ; INPUTS:
 ;   CSOL pixel number
-
 ;
 ; OPTIONAL INPUTS:
 ; None
@@ -39,5 +38,4 @@ function muv_px2wvl,pixno
   lambda_out=poly(pixno,muv_polyco)
 
   return,lambda_out
-
 end

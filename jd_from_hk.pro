@@ -4,7 +4,6 @@
 ;
 ; PURPOSE:
 ;   A function that extracts xtract a Julian day from a CSOL housekeeping structure
-
 ;
 ; INPUTS:
 ;   An array of structures of CSOL housekeeping data (produced in the procedure read_csol_metadatalog

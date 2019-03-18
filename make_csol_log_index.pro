@@ -3,7 +3,7 @@
 ;  make_csol_log_index
 ;
 ; PURPOSE:
-;   A prceedure to construct an index of CSOL housekeeping files stored as .SAV files.  Output is an array of structures that gives the
+;   A procedure to construct an index of CSOL housekeeping files stored as .SAV files.  Output is an array of structures that gives the
 ;   start and stop times of the housekeeping files and a complete path to the target image
 ;
 ; INPUTS:

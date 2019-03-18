@@ -9,7 +9,6 @@
 ;   light contribution to the image, particulary valuable since scattered light appears to be over corrected for the
 ;   weakest signals, routine produces similar scattered light contributions for stronger signals as get_scattered_light_img_1.pro.
 ;
-;
 ; INPUTS:
 ;   A CSOL image represented as a 2000x1504 float array
 ;
@@ -42,9 +41,9 @@
 ; MODIFICATION HISTORY: RCS_ID="$Id: get_scattered_light_img_1.pro,v 1.2 2019/01/02 18:14:15 spenton Exp spenton $"
 ;   2018-05-11: JWH
 ;-
-function get_scattered_light_img_1 , img
-  n_xpix=2000
-  n_ypix=1504
+function get_scattered_light_img_1, img, n_xpix=n_xpix, n_ypix=n_ypix
+	if n_elements(n_xpix) ne 1 then n_xpix=2000
+	if n_elements(n_ypix) ne 1 then n_ypix=1504
 
   xpix_counter=findgen(n_xpix)
   ypix_counter=findgen(n_ypix)

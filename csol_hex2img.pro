@@ -9,8 +9,8 @@
 ;
 ; INPUTS:
 ;   File name of the the hex file
-;   whichrot is the orientation of the final image, for subsequent  processing use whichrot =1  whichrot=6 make the image match
-;   what appears in Alan Sims' MATLAB images
+;   whichrot is the orientation of the final image, for subsequent processing use whichrot =1
+;  whichrot=6 make the image match what appears in Alan Sims' MATLAB images
 ;
 ; OPTIONAL INPUTS:
 ; None
@@ -37,15 +37,14 @@
 ;   2017-8-12: JWH
 ;-
 
-function csol_hex2img, filenm,whichrot
-
-  nrows=1504L
-  ncols=2000L
+function csol_hex2img,filenm,whichrot=whichrot,nrows=nrows,ncols=ncols
+	if n_elements(nrows) ne 1 then nrows=1504L
+	if n_elements(ncols) ne 1 then ncols=2000L
+	if n_elements(whichrot) ne 1 then whichrot=1
 
   get_lun,lun
   OPENR, lun, filenm
   B = BYTARR(2, nrows*ncols, /NOZERO)
-  ;B = BYTARR(2, nrows*ncols)
 
   READU, lun, B
   CLOSE, lun
@@ -78,5 +77,4 @@ function csol_hex2img, filenm,whichrot
   endelse
 
   return, img
-
 end
