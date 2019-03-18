@@ -1,10 +1,15 @@
-head	1.1;
+head	1.2;
 access;
 symbols;
 locks
-	spenton:1.1; strict;
+	spenton:1.2; strict;
 comment	@# @;
 
+
+1.2
+date	2019.03.18.19.30.02;	author spenton;	state Exp;
+branches;
+next	1.1;
 
 1.1
 date	2018.12.30.00.27.42;	author spenton;	state Exp;
@@ -17,9 +22,9 @@ desc
 @
 
 
-1.1
+1.2
 log
-@Initial revision
+@added fixed size as keywords
 @
 text
 @;***** CSOL image processing calibration *****
@@ -33,8 +38,8 @@ text
 ;
 ; INPUTS:
 ;   File name of the the hex file
-;   whichrot is the orientation of the final image, for subsequent  processing use whichrot =1  whichrot=6 make the image match
-;   what appears in Alan Sims' MATLAB images
+;   whichrot is the orientation of the final image, for subsequent processing use whichrot =1
+;  whichrot=6 make the image match what appears in Alan Sims' MATLAB images
 ;
 ; OPTIONAL INPUTS:
 ; None
@@ -61,15 +66,14 @@ text
 ;   2017-8-12: JWH
 ;-
 
-function csol_hex2img, filenm,whichrot
-
-  nrows=1504L
-  ncols=2000L
+function csol_hex2img,filenm,whichrot=whichrot,nrows=nrows,ncols=ncols
+	if n_elements(nrows) ne 1 then nrows=1504L
+	if n_elements(ncols) ne 1 then ncols=2000L
+	if n_elements(whichrot) ne 1 then whichrot=1
 
   get_lun,lun
   OPENR, lun, filenm
   B = BYTARR(2, nrows*ncols, /NOZERO)
-  ;B = BYTARR(2, nrows*ncols)
 
   READU, lun, B
   CLOSE, lun
@@ -102,6 +106,30 @@ function csol_hex2img, filenm,whichrot
   endelse
 
   return, img
-
 end
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d12 2
+a13 2
+;   whichrot is the orientation of the final image, for subsequent  processing use whichrot =1  whichrot=6 make the image match
+;   what appears in Alan Sims' MATLAB images
+d36 1
+a36 1
+; MODIFICATION HISTORY: RCS_ID="$Id$"
+d40 4
+a43 4
+function csol_hex2img, filenm,whichrot
+
+  nrows=1504L
+  ncols=2000L
+a47 1
+  ;B = BYTARR(2, nrows*ncols)
+a79 1
+
 @

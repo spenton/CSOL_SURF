@@ -56,7 +56,7 @@ function csol_hex2img,filenm,whichrot=whichrot,nrows=nrows,ncols=ncols
   img=lonarr(nrows,ncols)
 
   for j=0l,ncols-1 do begin
-    img[*,j]=c[j*1504:j*1504+(nrows-1)]
+    img[*,j]=c[j*nrows:j*nrows+(nrows-1)]
   endfor
 
   satpx=where(img lt 0, cnt)
@@ -72,8 +72,7 @@ function csol_hex2img,filenm,whichrot=whichrot,nrows=nrows,ncols=ncols
       ;print, 'pixel(0,0) in upper left corner (detector orientation as viewed from grating)'
     endif
   endif else begin
-    print,'invalid rotation index'
-    stop
+    message,'ERROR: invalid rotation index! whichrot must be 1 or 6!"
   endelse
 
   return, img

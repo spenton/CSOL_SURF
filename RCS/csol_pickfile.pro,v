@@ -1,0 +1,29 @@
+head	1.1;
+access;
+symbols;
+locks
+	spenton:1.1; strict;
+comment	@# @;
+
+
+1.1
+date	2019.03.18.19.30.02;	author spenton;	state Exp;
+branches;
+next	;
+
+
+desc
+@pickfile from the dropbox or LASP STORE
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@function csol_pickfile,verbose=verbose,dropbox=dropbox,laspstore=laspstore
+	a=pickfile(path=get_surf_dir(/drop),filter=".hex",title="Please Select a CSOL .hex file")
+	return,a
+end
+@
