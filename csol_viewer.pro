@@ -96,6 +96,9 @@ function HEX_openCSOL, info, coord=CSOLcoord
    msg=''
 
    ; select the image sequence
+   message,/info,'Select image sequence '
+   help,info,/str
+   stop
    img_seq = select_imgseq(info.filename, parent=info.top_base)
    if img_seq lt 1 then begin
       ; print,string(7b)
@@ -334,11 +337,12 @@ common csol_viewer_path, fits_path, raw_path
      GOTO, SKIP
   ENDIF
 
+  message,/info,'UVALUE set'
   case uvalue of
    'OPENCSOL': begin
          widget_control,/hourglass
          if n_elements(csol_path) eq 0 then  begin
-            csol_path = CEDAR_GETENV('CSOL_SURF_ROOT')
+            csol_path = CSOL_GETENV('CSOL_SURF_ROOT')
             csol_path  ='/Users/spenton/Dropbox_CSOL_SURF/CSOL_SURF Dropbox/CSOL_SURF/2019_Mar_SURF/SURF_2019/Data/CSOL/'
          endif
          file = dialog_pickfile(title='Select CSOL/SURF HEX file(s)',/must_exist, path=csol_path, $
@@ -1417,7 +1421,7 @@ pro csol_viewer_gfit_event,event
       ; get output file
       fdecomp, state.filename, disk,dir,fname,ext
       if fname eq '' then fname='gaussfit'
-      path=CEDAR_GETENV('CSOL_RESULTS_PATH')
+      path=CSOL_GETENV('CSOL_RESULTS_PATH')
       ; call this again in case the file had 2 extensions (as in *.fits.gz)
       fdecomp, fname,disk,dir,fname,ext
       file = fname+'_gfit.txt'
@@ -1460,7 +1464,7 @@ pro csol_viewer_gfit_event,event
       ; get output file
       fdecomp, state.filename, disk,dir,fname,ext
       if fname eq '' then fname='gaussfit'
-      path=CEDAR_GETENV('CSOL_RESULTS_PATH')
+      path=CSOL_GETENV('CSOL_RESULTS_PATH')
       fdecomp, fname,disk,dir,fname,ext
       file = fname+'_gfit.ps'
       file = dialog_pickfile(path=path, file=file,filter='*.ps',/write)
@@ -1791,7 +1795,7 @@ pro csol_viewer_stats,indata,background,group=group,title=title,filename=filenam
    endif
 
    ShowText, filename, GROUP=group, INFOTEXT=text, $
-             HEIGHT=20, WIDTH=60,font='6X13', PRINTCMD=CEDAR_GETENV('CEDAR_PRINT_CMD')
+             HEIGHT=20, WIDTH=60,font='6X13', PRINTCMD=CSOL_GETENV('CSOL_PRINT_CMD')
 
 end
 
@@ -2208,10 +2212,10 @@ pro csol_viewer_lineplot,event,window,info=info
       title=file+'  Row '+ strtrim((y+info.yoff)*(*info.data).ybin,2)
       ; use the big_image instead of orig in case we filtered data with time or pha
       if NOT PTR_VALID(info.big_image) then begin
-         lineplot,xv,(*info.orig)[*,y],title=title,xrange=xrange,ptitle=ptitle,$
+         svp_lineplot,xv,(*info.orig)[*,y],title=title,xrange=xrange,ptitle=ptitle,$
             header=*info.header,outfile=file
       endif else begin
-         lineplot,xv,(*info.big_image)[*,y],title=title,xrange=xrange,ptitle=ptitle,$
+         svp_lineplot,xv,(*info.big_image)[*,y],title=title,xrange=xrange,ptitle=ptitle,$
             header=*info.header,outfile=file
       endelse
    end
@@ -2236,10 +2240,10 @@ pro csol_viewer_lineplot,event,window,info=info
       title=file+'  Column '+strtrim((x+info.xoff)*(*info.data).xbin,2)
       ; use the big_image instead of orig in case we filtered data with time or pha
       if NOT PTR_VALID(info.big_image) then begin
-         lineplot,xv,reform((*info.orig)[x,*]),title=title,xrange=xrange,ptitle=ptitle,$
+         svp_lineplot,xv,reform((*info.orig)[x,*]),title=title,xrange=xrange,ptitle=ptitle,$
             header=*info.header,outfile=file
       endif else begin
-         lineplot,xv,reform((*info.big_image)[x,*]),title=title,xrange=xrange,ptitle=ptitle,$
+         svp_lineplot,xv,reform((*info.big_image)[x,*]),title=title,xrange=xrange,ptitle=ptitle,$
             header=*info.header,outfile=file
       endelse
    end
@@ -2277,7 +2281,7 @@ pro csol_viewer_lineplot,event,window,info=info
             xoff=info.xoff, yoff=info.yoff
 
          if info.csol_viewer_state(0) eq 5 then begin
-            lineplot,xv,data,title=title,xrange=xrange,ptitle=ptitle,header=*info.header,outfile=file
+            svp_lineplot,xv,data,title=title,xrange=xrange,ptitle=ptitle,header=*info.header,outfile=file
          endif else begin
             mn=min(xv,max=mx)
             findlines, xv, data, /gui, title=title, xrange=xrange, yrange=[y1,y2],$
@@ -2323,7 +2327,7 @@ pro csol_viewer_lineplot,event,window,info=info
             xoff=info.xoff, yoff=info.yoff
 
          if info.csol_viewer_state(0) eq 6 then begin
-            lineplot,xv,data,title=title,xrange=xrange,header=*info.header,outfile=file,ptitle=ptitle
+            svp_lineplot,xv,data,title=title,xrange=xrange,header=*info.header,outfile=file,ptitle=ptitle
          endif else begin
             mn=min(xv,max=mx)
             findlines, xv, data, /gui, title=title, xrange=xrange, yrange=[x1,x2],$
@@ -2353,7 +2357,7 @@ pro csol_viewer_lineplot,event,window,info=info
          ' to '+strtrim(info.xregion[1]+info.xoff,2)+' '+strtrim(info.yregion[1]+info.yoff,2)
       xv = findgen(n_elements(data))
       xv = xv/max(xv)*dist
-      lineplot,xv,data,title=file+'  '+title,ptitle=info.wtitle+'  '+title,xrange=[0,dist],header=*info.header,outfile=file
+      svp_lineplot,xv,data,title=file+'  '+title,ptitle=info.wtitle+'  '+title,xrange=[0,dist],header=*info.header,outfile=file
 
    end
 
@@ -2422,7 +2426,7 @@ pro csol_viewer_ps,color=color,reversed=reversed,print=print,png=png,jpg=jpg,inf
 ;
    xsize=10.0  & ysize=7.5
 
-   path=CEDAR_GETENV('CSOL_RESULTS_PATH')
+   path=CSOL_GETENV('CSOL_RESULTS_PATH')
    fdecomp,info.filename,disk,directory,name,ext
    if path eq '' then path=directory
 
@@ -2750,10 +2754,10 @@ end
 pro csol_viewer,image,h, file=file, FUV=fuv, NUV=nuv, PARENT=parent, RESTORE=restore, $
     CONTRAST=contrast, wtitle=wtitle
 
-   ; define a non-existing CEDAR_DEF_FILE in case none were previously defined
+   ; define a non-existing CSOL_DEF_FILE in case none were previously defined
    ; and we are running csol_viewer in "Virtual Machine" mode to prevent popup
    ; for request of cedar.def file all the time.
-   defsysv, '!CEDAR_DEF_FILE', exists=exists
+   defsysv, '!CSOL_DEF_FILE', exists=exists
    if exists eq 0 then begin
       if lmgr(/runtime) then begin
          ; define the stuff that would normaly be in the CSOL_startup in case we're running VM
@@ -2766,10 +2770,10 @@ pro csol_viewer,image,h, file=file, FUV=fuv, NUV=nuv, PARENT=parent, RESTORE=res
          if !version.os_family ne "Windows" then DEVICE, PSEUDO_COLOR=8
       endif
       ; if the system variable is not defined we have not read a cedar.def file
-      temp=cedar_getenv("CEDAR_DEF_FILE",/file)
+      temp=csol_getenv("CSOL_DEF_FILE",/file)
    endif
 
-    print,'CEDAR_DEF_FILE is '+!CEDAR_DEF_FILE
+    print,'CSOL_DEF_FILE is '+!CSOL_DEF_FILE
 
    ;
    ; initialization
