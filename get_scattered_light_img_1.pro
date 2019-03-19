@@ -38,7 +38,7 @@
 ;      fuv_line[i]=robust_sigma(uu[i,slith_info.fuv_bot[i]:slith_info.fuv_top[i]])
 ;   endfor
 ;
-; MODIFICATION HISTORY: RCS_ID="$Id: get_scattered_light_img_1.pro,v 1.2 2019/01/02 18:14:15 spenton Exp spenton $"
+; MODIFICATION HISTORY: RCS_ID="$Id: get_scattered_light_img_1.pro,v 1.3 2019/03/13 10:55:42 spenton Exp $"
 ;   2018-05-11: JWH
 ;-
 function get_scattered_light_img_1, img, n_xpix=n_xpix, n_ypix=n_ypix

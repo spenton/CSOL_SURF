@@ -29,7 +29,7 @@
 ;
 ; EXAMPLE:
 ;
-; MODIFICATION HISTORY: RCS_ID="$Id: make_csol_log_index.pro,v 1.1 2018/12/30 00:27:42 spenton Exp $"
+; MODIFICATION HISTORY: RCS_ID="$Id: make_csol_log_index.pro,v 1.2 2019/03/13 10:55:42 spenton Exp $"
 ;   2018-05-11: JWH
 ;-
 

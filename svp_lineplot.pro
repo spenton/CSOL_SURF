@@ -1,12 +1,12 @@
-; $Id: svp_lineplot.pro,v 1.1 2019/03/08 23:02:29 spenton Exp spenton $
+; $Id: svp_lineplot.pro,v 1.1 2019/03/19 19:40:15 spenton Exp spenton $
 ;+
 ;				lineplot
 ; Widget line plot tool
 ;
 ; CALLING SEQUENCE:
-;   lineplot,x,y,xsize=1000,ysize=800
+;   svp_lineplot,x,y,xsize=1000,ysize=800
 ;      or
-;   lineplot,y
+;   svp_lineplot,y
 ;
 ; INPUTS
 ;   x - input x vector
@@ -38,11 +38,11 @@
 
 ;====================================================== LINEPLOT_EVENT
 ;
-; Main event driver for lineplot
+; Main event driver for svp_lineplot
 ;
-pro lineplot_event,event
-   common lineplot_common,info,xarray,yarray,lineplot_r,lineplot_g,lineplot_b,$
-               lineplot_rsave,lineplot_gsave,lineplot_bsave,cwd
+pro svp_lineplot_event,event
+   common svp_lineplot_common,info,xarray,yarray,lineplot_r,lineplot_g,lineplot_b,$
+               svp_lineplot_rsave,lineplot_gsave,lineplot_bsave,cwd
 
   ;tvlct,lineplot_r,lineplot_g,lineplot_b
 
@@ -77,7 +77,7 @@ pro lineplot_event,event
         ;; widget_control, info.main, map=1
 
         ;; redraw the plot
-        lineplot_plot,info,xarray,yarray
+        svp_lineplot_plot,info,xarray,yarray
 
         WIDGET_CONTROL, info.main, TLB_GET_SIZE=windowSize
         info.windowSize = windowSize
@@ -110,8 +110,8 @@ pro lineplot_event,event
      ;set_viewport,0.08,0.98,0.4,0.9
      mypos=!p.position
      !p.position=[0.08,0.4,0.98,0.9]
-     lineplot_plot,info,xarray,yarray,/ps
-     lineplot_annotate,info,/ps
+     svp_lineplot_plot,info,xarray,yarray,/ps
+     svp_lineplot_annotate,info,/ps
      device,/close
      set_plot, thisDevice
      !p.background=255
@@ -135,8 +135,8 @@ pro lineplot_event,event
      mypos=!p.position
      ;!p.position=[0.08,0.4,0.98,0.9]
      !p.position=[0.1,0.4,0.9,0.9]
-     lineplot_plot,info,xarray,yarray,/ps
-     lineplot_annotate,info,/ps
+     svp_lineplot_plot,info,xarray,yarray,/ps
+     svp_lineplot_annotate,info,/ps
      img=tvrd()
      set_plot, thisDevice
      !p.background=255
@@ -147,7 +147,7 @@ pro lineplot_event,event
      !p.position=mypos
      end
   'ASCII Table': begin
-     lineplot_select,info,'Select Which Plot to Write', isel,group=event.top, /all
+     svp_lineplot_select,info,'Select Which Plot to Write', isel,group=event.top, /all
      file=info.outfile+'.txt'
      if n_elements(info.title) gt isel then begin
         if strlen(info.title[isel]) gt 0 then file=info.title[isel]
@@ -180,7 +180,7 @@ pro lineplot_event,event
      free_lun,unit
      end
   'FITS Table': begin
-     lineplot_select,info,'Select Which Plot to Write', $
+     svp_lineplot_select,info,'Select Which Plot to Write', $
         isel,group=event.top
      file=info.outfile+'_line.fits'
      file = dialog_pickfile(path=cwd,get_path=npath,file=file,filter='*.fits',/write)
@@ -297,7 +297,7 @@ pro lineplot_event,event
       info.xmax = xmax
       info.ymin = ymin
       info.ymax = ymax
-      lineplot_plot,info,xarray,yarray
+      svp_lineplot_plot,info,xarray,yarray
       end
    'UNZOOM': begin
       yoff = yarray*0
@@ -334,7 +334,7 @@ pro lineplot_event,event
       info.xmax = xmax
       info.ymin = ymin
       info.ymax = ymax
-      lineplot_plot,info,xarray,yarray
+      svp_lineplot_plot,info,xarray,yarray
       end
    'UNZOOM_X': begin
       yoff = yarray*0
@@ -354,7 +354,7 @@ pro lineplot_event,event
       widget_control,info.xmax_base,set_value = string(xmax,format='(G)')
       info.xmin = xmin
       info.xmax = xmax
-      lineplot_plot,info,xarray,yarray
+      svp_lineplot_plot,info,xarray,yarray
       end
    'UNZOOM_Y': begin
       yoff = yarray*0
@@ -376,11 +376,11 @@ pro lineplot_event,event
       widget_control,info.ymax_base,set_value = string(ymax,format='(G)')
       info.ymin = ymin
       info.ymax = ymax
-      lineplot_plot,info,xarray,yarray
+      svp_lineplot_plot,info,xarray,yarray
       end
 
-   'RANGE': lineplot_plot,info,xarray,yarray
-   'LINESTYLES': lineplot_plotpar,group=event.top
+   'RANGE': svp_lineplot_plot,info,xarray,yarray
+   'LINESTYLES': svp_lineplot_plotpar,group=event.top
    'PAN_R1': begin
       ; move 1/10 of screen
       widget_control,info.xmin_base,get_value = xmin
@@ -394,7 +394,7 @@ pro lineplot_event,event
       widget_control,info.xmax_base,set_value = string(xmax,format='(G)')
       info.xmin = xmin
       info.xmax = xmax
-      lineplot_plot,info,xarray,yarray
+      svp_lineplot_plot,info,xarray,yarray
       end
    'PAN_R2': begin
       ; move a full screen
@@ -411,7 +411,7 @@ pro lineplot_event,event
       xmax=double(xmax)
       info.xmin = xmin
       info.xmax = xmax
-      lineplot_plot,info,xarray,yarray
+      svp_lineplot_plot,info,xarray,yarray
       end
    'PAN_L1': begin
       widget_control,info.xmin_base,get_value = xmin
@@ -427,7 +427,7 @@ pro lineplot_event,event
       widget_control,info.xmax_base,set_value = string(xmax,format='(G)')
       info.xmin = xmin
       info.xmax = xmax
-      lineplot_plot,info,xarray,yarray
+      svp_lineplot_plot,info,xarray,yarray
       end
    'PAN_L2': begin
       ; move a full screen
@@ -442,7 +442,7 @@ pro lineplot_event,event
       widget_control,info.xmax_base,set_value = string(xmax,format='(G)')
       info.xmin = xmin
       info.xmax = xmax
-      lineplot_plot,info,xarray,yarray
+      svp_lineplot_plot,info,xarray,yarray
       end
    'PAN_U1': begin
       ; move up 1/4 of screen
@@ -457,7 +457,7 @@ pro lineplot_event,event
       widget_control,info.ymax_base,set_value = string(ymax,format='(G)')
       info.ymin = ymin
       info.ymax = ymax
-      lineplot_plot,info,xarray,yarray
+      svp_lineplot_plot,info,xarray,yarray
       end
    'PAN_D1': begin
       ; move up 1/4 of screen
@@ -472,26 +472,26 @@ pro lineplot_event,event
       widget_control,info.ymax_base,set_value = string(ymax,format='(G)')
       info.ymin = ymin
       info.ymax = ymax
-      lineplot_plot,info,xarray,yarray
+      svp_lineplot_plot,info,xarray,yarray
       end
    'XLOG': begin
       info.xlog = 1 - info.xlog
       if info.xlog eq 1 then v='X Linear' else v='X Log'
       widget_control,info.xbutton,set_value=v
-      lineplot_plot,info,xarray,yarray
+      svp_lineplot_plot,info,xarray,yarray
       end
     'YLOG': begin
       info.ylog = 1 - info.ylog
       if info.ylog eq 1 then v='Y Linear' else v='Y Log'
       widget_control,info.ybutton,set_value=v
-      lineplot_plot,info,xarray,yarray
+      svp_lineplot_plot,info,xarray,yarray
       end
   'Statistics': begin
       ; print the statistics from the current zoom in the log window
       widget_control,info.xmin_base,get_value = xmin
       widget_control,info.xmax_base,get_value = xmax
       xmin=double(xmin) & xmax=double(xmax)
-      lineplot_select,info,'Select Which Plot to get STATS',isel,group=event.top
+      svp_lineplot_select,info,'Select Which Plot to get STATS',isel,group=event.top
       if isel ne 0 then i1=round(total(info.ns[0:isel-1])) else i1=0
       i2 = i1 + info.ns[isel]-1
       x = xarray[i1:i2]
@@ -535,20 +535,20 @@ pro lineplot_event,event
       end
 
   'No Baseline': begin
-      lineplot_gfit,info,xarray,yarray,uvalue,group=event.top
+      svp_lineplot_gfit,info,xarray,yarray,uvalue,group=event.top
       end
   'Constant Baseline': begin
-      lineplot_gfit,info,xarray,yarray,uvalue,group=event.top
+      svp_lineplot_gfit,info,xarray,yarray,uvalue,group=event.top
       end
   'Linear Baseline': begin
-      lineplot_gfit,info,xarray,yarray,uvalue,group=event.top
+      svp_lineplot_gfit,info,xarray,yarray,uvalue,group=event.top
       end
   'Interactive/Multiple': begin
-      lineplot_gfit,info,xarray,yarray,uvalue,group=event.top
+      svp_lineplot_gfit,info,xarray,yarray,uvalue,group=event.top
       end
 
   'Drag': begin
-      lineplot_select,info,'Select Which Plot to DRAG', isel,group=event.top
+      svp_lineplot_select,info,'Select Which Plot to DRAG', isel,group=event.top
       info.dragid=isel
       wset,info.plot2_id
       erase
@@ -572,7 +572,7 @@ pro lineplot_event,event
          info.max_val[i] = mx
          i1 = i2+1
       endfor
-      lineplot_plot,info,xarray,yarray
+      svp_lineplot_plot,info,xarray,yarray
       end
    'PLOT1': begin
       xd = event.x   ;device coordinates
@@ -637,8 +637,8 @@ pro lineplot_event,event
              info.xmax = xmax
              info.ymin = ymin
              info.ymax = ymax
-             lineplot_plot,info,xarray,yarray
-             lineplot_annotate,info
+             svp_lineplot_plot,info,xarray,yarray
+             svp_lineplot_annotate,info
              return
           endif
       endif
@@ -686,8 +686,8 @@ pro lineplot_event,event
              yarray[i1:i2] += deltay
              info.min_val[info.dragid] = min(yarray[i1:i2], max=mx)
              info.max_val[info.dragid] = mx
-             lineplot_plot,info,xarray,yarray
-             lineplot_annotate,info
+             svp_lineplot_plot,info,xarray,yarray
+             svp_lineplot_annotate,info
              widget_control,info.log,/append,set_v='  '
              widget_control,info.log,/append,set_v=info.title[info.dragid]
              widget_control,info.log,/append,set_value='Drag_X = '+strtrim(info.dragx[info.dragid],2)
@@ -699,8 +699,8 @@ pro lineplot_event,event
 
       end
    'PLOT2':
-   'YOFF': lineplot_plot,info,xarray,yarray
-   'NORMALIZE': lineplot_plot,info,xarray,yarray
+   'YOFF': svp_lineplot_plot,info,xarray,yarray
+   'NORMALIZE': svp_lineplot_plot,info,xarray,yarray
    else:
    endcase
    return
@@ -709,7 +709,7 @@ pro lineplot_event,event
 ;
 ; Select which vector to use
 ;
-pro lineplot_select,info,title,isel,group=group,all=all
+pro svp_lineplot_select,info,title,isel,group=group,all=all
 
    n = info.n
    if info.n eq 1 then begin
@@ -734,7 +734,7 @@ pro lineplot_select,info,title,isel,group=group,all=all
    ptr_free,ptr
    return
 end
-pro lineplot_select_event,event
+pro svp_lineplot_select_event,event
    widget_control,event.top,get_uvalue=ptr
    good = where((*ptr).buttons eq event.id)
    (*ptr).isel = good[0]
@@ -745,7 +745,7 @@ end
 ;
 ; Routine to generate the plot
 ;
-pro lineplot_plot,info,xarray,yarray,ps=ps
+pro svp_lineplot_plot,info,xarray,yarray,ps=ps
 
    if not keyword_set(ps) then begin
       wset,info.plot1_id
@@ -817,7 +817,7 @@ end
 ;
 ; Routine to fill annotation box
 ;
-pro lineplot_annotate,info,ps=ps
+pro svp_lineplot_annotate,info,ps=ps
 
    if keyword_set(ps) then begin
       ;set_viewport,0,1.0,0,1.0
@@ -850,9 +850,9 @@ pro lineplot_annotate,info,ps=ps
 ;
 ; Routine to adjust the plotting parameters
 ;
-pro lineplot_plotpar,group=group
-   common lineplot_common,info,xarray,yarray,lineplot_r,lineplot_g,lineplot_b,$
-               lineplot_rsave,lineplot_gsave,lineplot_bsave
+pro svp_lineplot_plotpar,group=group
+   common svp_lineplot_common,info,xarray,yarray,lineplot_r,lineplot_g,lineplot_b,$
+               svp_lineplot_rsave,lineplot_gsave,lineplot_bsave
 
 
 ;
@@ -929,15 +929,15 @@ pro lineplot_plotpar,group=group
          plot_select:plot_select,nsum_field:nsum_field}
    point = ptr_new({base:base})
    widget_control,mainbase,set_uvalue=point
-   lineplot_plotpar_set,base,info,lineplot_r,lineplot_g,lineplot_b
+   svp_lineplot_plotpar_set,base,info,lineplot_r,lineplot_g,lineplot_b
    xmanager,'lineplot_plotpar',mainbase,/no_block
 
    return
 end
 
-pro lineplot_plotpar_event,event
-   common lineplot_common,info,xarray,yarray,lineplot_r,lineplot_g,lineplot_b,$
-               lineplot_rsave,lineplot_gsave,lineplot_bsave
+pro svp_lineplot_plotpar_event,event
+   common svp_lineplot_common,info,xarray,yarray,lineplot_r,lineplot_g,lineplot_b,$
+               svp_lineplot_rsave,lineplot_gsave,lineplot_bsave
 
 
    widget_control,event.id,get_uvalue=uvalue
@@ -948,21 +948,21 @@ pro lineplot_plotpar_event,event
 
    case uvalue of
    'DONE': begin
-      lineplot_plot,info,xarray,yarray
-      lineplot_annotate,info
+      svp_lineplot_plot,info,xarray,yarray
+      svp_lineplot_annotate,info
       if ptr_valid(point) then ptr_free,point
       widget_control,event.top,/destroy
       return
       end
    'PLOT_SELECT': begin
       if event.select eq 1 then begin
-         lineplot_plotpar_set,base,info,lineplot_r,lineplot_g,lineplot_b
+         svp_lineplot_plotpar_set,base,info,lineplot_r,lineplot_g,lineplot_b
          return
       end
       end
-   'RED': lineplot_r[i+2] = event.value
-   'BLUE': lineplot_b[i+2] = event.value
-   'GREEN': lineplot_g[i+2] = event.value
+   'RED': svp_lineplot_r[i+2] = event.value
+   'BLUE': svp_lineplot_b[i+2] = event.value
+   'GREEN': svp_lineplot_g[i+2] = event.value
    'LINESTYLE': info.linestyle[i] = event.index
    'PSYM': begin
       psyms = [-7,-6,-5,-4,-2,-1,0,1,2,3,4,5,6,7,10]
@@ -1005,14 +1005,14 @@ pro lineplot_plotpar_event,event
                  ptr_free,info.header[j-1]
                  info.header[j-1]=info.header[j]
              endif
-             lineplot_r[j-1+2]=lineplot_r[j+2]
-             lineplot_g[j-1+2]=lineplot_g[j+2]
-             lineplot_b[j-1+2]=lineplot_b[j+2]
+             svp_lineplot_r[j-1+2]=lineplot_r[j+2]
+             svp_lineplot_g[j-1+2]=lineplot_g[j+2]
+             svp_lineplot_b[j-1+2]=lineplot_b[j+2]
          endfor
          info.n -= 1
-         lineplot_plotpar_set,base,info,lineplot_r,lineplot_g,lineplot_b
-         lineplot_plot,info,xarray,yarray
-         lineplot_annotate,info
+         svp_lineplot_plotpar_set,base,info,lineplot_r,lineplot_g,lineplot_b
+         svp_lineplot_plot,info,xarray,yarray
+         svp_lineplot_annotate,info
          if ptr_valid(point) then ptr_free,point
          widget_control,event.top,/destroy
          return
@@ -1029,10 +1029,10 @@ pro lineplot_plotpar_event,event
    widget_control,base.nsum_field,get_value=v
    info.nsum[i] = v
 
-   lineplot_plotpar_set,base,info,lineplot_r,lineplot_g,lineplot_b
+   svp_lineplot_plotpar_set,base,info,lineplot_r,lineplot_g,lineplot_b
    if apply then begin
-      lineplot_plot,info,xarray,yarray
-      lineplot_annotate,info
+      svp_lineplot_plot,info,xarray,yarray
+      svp_lineplot_annotate,info
    endif
 
     return
@@ -1041,7 +1041,7 @@ end
 ;
 ; Routine to set plot paramters for the selected plot
 ;
-pro lineplot_plotpar_set,base,info,red,green,blue
+pro svp_lineplot_plotpar_set,base,info,red,green,blue
 
    widget_control,base.plot_select,get_value=isel
    widget_control,base.red_slider,set_value=red(isel+2)
@@ -1072,12 +1072,12 @@ end
 ;
 ; Gaussian Fit Routine for line plot
 ;
-pro lineplot_gfit,info,xarray,yarray,typename,group=group
+pro svp_lineplot_gfit,info,xarray,yarray,typename,group=group
 ;
 ; Extract data region to fit
 ;
-   lineplot_select,info,'Select Which Plot to FIT',isel,group=group
-   lineplot_plot,info,xarray,yarray
+   svp_lineplot_select,info,'Select Which Plot to FIT',isel,group=group
+   svp_lineplot_plot,info,xarray,yarray
    if isel ne 0 then i1 = round(total(info.ns[0:isel-1])) $
               else i1 = 0
    i2 = i1 + info.ns[isel]-1
@@ -1160,8 +1160,8 @@ pro svp_lineplot,xin,yin,title=title,xtitle=xtitle,ytitle=ytitle, $
    linestyle=linestyle, thick=thick, nsum=nsum, unzoom=unzoom,$
    xsize=xsize,ysize=ysize,_extra=extra
 
-   common lineplot_common,info,xarray,yarray,lineplot_r,lineplot_g,lineplot_b,$
-          lineplot_rsave,lineplot_gsave,lineplot_bsave, cwd
+   common svp_lineplot_common,info,xarray,yarray,lineplot_r,lineplot_g,lineplot_b,$
+          svp_lineplot_rsave,lineplot_gsave,lineplot_bsave, cwd
 
    MAX_NUM_PLOTS = 24
 
@@ -1223,9 +1223,9 @@ IF NOT KEYWORD_SET(restore)  THEN BEGIN
       if keyword_set(thick) then info.thick[info.n]=thick
       if keyword_set(nsum) then info.nsum[info.n]=nsum
       if n_elements(color) eq 3 then begin
-          lineplot_r[info.n+2] = color[0]
-          lineplot_g[info.n+2] = color[1]
-          lineplot_b[info.n+2] = color[2]
+          svp_lineplot_r[info.n+2] = color[0]
+          svp_lineplot_g[info.n+2] = color[1]
+          svp_lineplot_b[info.n+2] = color[2]
           tvlct,lineplot_r,lineplot_g,lineplot_b
       endif
       info.n = info.n + 1
@@ -1235,8 +1235,8 @@ IF NOT KEYWORD_SET(restore)  THEN BEGIN
          info.ptitle=ptitle
          widget_control,info.log,/append,set_v=ptitle
       end
-      lineplot_plot,info,xarray,yarray
-      lineplot_annotate,info
+      svp_lineplot_plot,info,xarray,yarray
+      svp_lineplot_annotate,info
 
        if keyword_set(unzoom) then widget_control,info.unzoom_id, send_event={ID:info.unzoom_id, TOP:info.main, HANDLER:info.main, SELECT:1}
 
@@ -1248,9 +1248,9 @@ IF NOT KEYWORD_SET(restore)  THEN BEGIN
    xarray = reform(x)
    yarray = reform(y)
    tvlct,lineplot_r,lineplot_g,lineplot_b,/get
-   lineplot_rsave = lineplot_r
-   lineplot_gsave = lineplot_g
-   lineplot_bsave = lineplot_b
+   svp_lineplot_rsave = svp_lineplot_r
+   svp_lineplot_gsave = svp_lineplot_g
+   svp_lineplot_bsave = svp_lineplot_b
    ; black on white background
    xmin_val = MIN(x, MAX=xmax_val)
    ymin_val = MIN(y, MAX=ymax_val)
@@ -1437,9 +1437,9 @@ IF NOT(KEYWORD_SET(restore)) THEN BEGIN
    if keyword_set(thick) then info.thick[0]=thick
    if keyword_set(nsum) then info.nsum[0]=nsum
    if n_elements(color) eq 3 then begin
-      lineplot_r[2] = color[0]
-      lineplot_g[2] = color[1]
-      lineplot_b[2] = color[2]
+      svp_lineplot_r[2] = color[0]
+      svp_lineplot_g[2] = color[1]
+      svp_lineplot_b[2] = color[2]
       tvlct,lineplot_r,lineplot_g,lineplot_b
    endif
 
@@ -1467,8 +1467,8 @@ ENDELSE
 
    widget_control,info.log,/append,set_v=info.ptitle
    widget_control,info.log,/append,set_v=info.title(0)
-   lineplot_plot,info,xarray,yarray
-   lineplot_annotate,info
+   svp_lineplot_plot,info,xarray,yarray
+   svp_lineplot_annotate,info
    xmanager,'lineplot',main_base,/no_block
 
    if keyword_set(unzoom) then widget_control,info.unzoom_id, send_event={ID:info.unzoom_id, TOP:info.main, HANDLER:info.main, SELECT:1}

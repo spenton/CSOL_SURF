@@ -29,7 +29,7 @@
 ; EXAMPLE:
 ;   muv_wvl=muv_px2wvl(findgen(2000)) ; give full MUV wavlength scale
 ;
-; MODIFICATION HISTORY: RCS_ID="$Id: muv_px2wvl.pro,v 1.1 2018/12/30 00:27:42 spenton Exp $"
+; MODIFICATION HISTORY: RCS_ID="$Id: muv_px2wvl.pro,v 1.2 2019/03/13 10:55:42 spenton Exp $"
 ;   2018-04-11: JWH
 ;-
 function muv_px2wvl,pixno

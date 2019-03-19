@@ -1,6 +1,6 @@
 ;+
 ;
-; MODIFICATION HISTORY: RCS_ID="$Id: get_surf_dir.pro,v 1.1 2018/12/30 00:27:42 spenton Exp $" RCS_ID=$Id: get_surf_dir.pro,v 1.1 2018/12/30 00:27:42 spenton Exp $
+; MODIFICATION HISTORY: RCS_ID="$Id: get_surf_dir.pro,v 1.4 2019/03/19 19:40:15 spenton Exp spenton $" RCS_ID=$Id: get_surf_dir.pro,v 1.4 2019/03/19 19:40:15 spenton Exp spenton $
 ;-
 function get_surf_dir,txt=txt,logs=logs,basedir=basedir,data=data,init=init,dropbox=dropbox,verbose=verbose,laspstore=laspstore
 	if n_elements(dropbox) ne 1 then dropbox=1

@@ -30,7 +30,7 @@
 ; EXAMPLE:
 ;   csol_jd=jd_from_hk(csol_hk, n_hkrec)
 ;
-; MODIFICATION HISTORY: RCS_ID="$Id: jd_from_hk.pro,v 1.1 2018/12/30 00:27:42 spenton Exp $"
+; MODIFICATION HISTORY: RCS_ID="$Id: jd_from_hk.pro,v 1.2 2019/03/13 10:55:42 spenton Exp $"
 ;   2018-04-11: JWH
 ;-
 

@@ -33,7 +33,7 @@
 ; EXAMPLE:
 ; im=csol_hex2img(filenm,1)
 ;
-; MODIFICATION HISTORY: RCS_ID="$Id: csol_hex2img.pro,v 1.1 2018/12/30 00:27:42 spenton Exp $"
+; MODIFICATION HISTORY: RCS_ID="$Id: csol_hex2img.pro,v 1.3 2019/03/18 19:53:01 spenton Exp $"
 ;   2017-8-12: JWH
 ;-
 

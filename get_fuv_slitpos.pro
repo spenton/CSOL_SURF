@@ -32,7 +32,7 @@
 ; EXAMPLE:
 ;   slit_info=get_fuv_slitpos(wvl,img)
 ;
-; MODIFICATION HISTORY: RCS_ID="$Id: get_fuv_slitpos.pro,v 1.1 2018/12/30 00:27:42 spenton Exp $"
+; MODIFICATION HISTORY: RCS_ID="$Id: get_fuv_slitpos.pro,v 1.2 2019/03/19 19:40:15 spenton Exp spenton $"
 ;   2018-04-11: JWH
 ;-
 
@@ -75,8 +75,8 @@ function get_fuv_slitpos,wvl,img
   subpix=0.25*findgen(8000)
   sset=bspline_iterfit(pix,muvline_x,maxiter=10,requiren=0,bkspace=2)
   muvline_intp=bspline_valu(subpix,sset)
-  ;  lineplot, subpix,deriv(subpix,muvline_intp),title='muvline_intp (bspline)'
-  ;  lineplot, pix,deriv(pix,muvline_x),title='data derivative'
+  ;  svp_lineplot, subpix,deriv(subpix,muvline_intp),title='muvline_intp (bspline)'
+  ;  svp_lineplot, pix,deriv(pix,muvline_x),title='data derivative'
   mnmx_x=minmax(deriv(muvline_x),mnmx_xind)
   mnmx_xind=reverse(mnmx_xind)
   ;print, mnmx_xind

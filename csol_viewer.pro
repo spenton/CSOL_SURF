@@ -1,7 +1,7 @@
-;$Id: csol_viewer.pro,v 1.1 2019/03/18 19:30:02 spenton Exp spenton $
+;$Id: csol_viewer.pro,v 1.2 2019/03/19 19:40:15 spenton Exp spenton $
 ;
 ;+
-;            csol_viewer
+; csol_viewer
 ;
 ; Routine to interactively examine raw CSOL (HEX) data files
 ;
@@ -77,42 +77,29 @@
 
 @xttag_CSOL
 
-; =========================================================== HEX_OPENRAW
+; =========================================================== readHEX
 ;
 function readHEX,filename, image=image, dtype=dtype,whichrot=whichrot
 	if n_elements(whichrot) ne 1 then whichrot=1
 	image=csol_hex2img(filename,whichrot=whichrot)
-	help,image
-	stop
 	status=1
-	dtype=1
+	message,/info,'Reading HEX'
+	dtype=size(image,/type)
 	return, status
 end
-function HEX_openCSOL, info, coord=CSOLcoord
-
+function HEX_openCSOL, info, coord=CSOLcoord,verbose=verbose
+   if n_elements(verbose) ne 1 then verbose=0
    if n_elements(info) eq 0 then return, 'Missing info variable'
 
    fdecomp, info.filename, disk, dir, fname, ext
    msg=''
 
    ; select the image sequence
-   message,/info,'Select image sequence '
-   help,info,/str
-   stop
-   img_seq = select_imgseq(info.filename, parent=info.top_base)
-   if img_seq lt 1 then begin
-      ; print,string(7b)
-      ; res=dialog_message(filename+' is not a valid file!',/error)
-      return, 'No images or Canceled selection'
-   endif
-
-   ; get the number of images in the file
+   img_seq = 1
    num_img = 1
 
    instrument = 'CSOL'   ;CSOL
-   print,'whoa whoa whoa'
-   stop
-   status = readHEX(info.filename, header=HEX_header, image=image, img_seq=img_seq, dtype=dtype)
+   status = readHEX(info.filename,image=image, dtype=dtype)
    IF status ne '' THEN BEGIN
       ; problem reading the image sequence from the file
       print,string(7b)
@@ -134,31 +121,17 @@ function HEX_openCSOL, info, coord=CSOLcoord
    if PTR_VALID(info.data) then PTR_FREE, info.data
    if PTR_VALID(info.header) then PTR_FREE, info.header
 
-   if strpos(strupcase(detector), 'NUV') ge 0 then begin
-      info.little_nx=200.0
-      info.little_ny=200.0
-      ; destroy previous instance of window before creating a new one
-      if info.little_window ne -1 then widget_control, info.little_window, /DESTROY
-      info.little_window = widget_draw(info.base_nuv,uvalue='LITTLE_WINDOW',retain=2, $
-         xsize=info.little_nx,ysize=info.little_ny,/button_events,/motion)
-      widget_control,info.little_window,get_value=little_id
-      info.little_id = little_id
-   endif else if strpos(strupcase(detector), 'FUV') ge 0 then begin
-      info.little_nx = 752.0
-      info.little_ny = 47.0
-      ; destroy previous instance of window before creating a new one
-      if info.little_window ne -1 then widget_control, info.little_window, /DESTROY
-      info.little_window = widget_draw(info.base_fuv,uvalue='LITTLE_WINDOW',retain=2, $
-         xsize=info.little_nx,ysize=info.little_ny,/button_events,/motion)
-      widget_control,info.little_window,get_value=little_id
-      info.little_id = little_id
-   endif
-
-
+	info.little_nx=240.0
+	info.little_ny=240.0
+	; destroy previous instance of window before creating a new one
+	if info.little_window ne -1 then widget_control, info.little_window, /DESTROY
+	info.little_window = widget_draw(info.base_nuv,uvalue='LITTLE_WINDOW',retain=2, $
+	 xsize=info.little_nx,ysize=info.little_ny,/button_events,/motion)
+	widget_control,info.little_window,get_value=little_id
+	info.little_id = little_id
 
    ; form the data structure
    info.header = PTR_NEW('')
-   info.HEXseg = segment
    info.orig = PTR_NEW(orig, /NO_COPY)
    info.otherseg = PTR_NEW(otherseg, /no_copy)
    info.data = PTR_NEW({  $
@@ -184,54 +157,25 @@ function HEX_openCSOL, info, coord=CSOLcoord
    (*info.data).gtime2 = PTR_NEW(gtime2, /no_copy)
    (*info.data).pha = PTR_NEW(pha, /no_copy)
    (*info.data).phamask = PTR_NEW([-1], /no_copy)
-   item_found = get_header_item('LQITIME', bswap, exptime, num_vals, HEX_header)
-   ; LQITIME is in 0.1 seconds
-   if item_found then info.exptime=exptime/10.0 else info.exptime=0.0
    info.timerange=timerange
 
-   ; always DETECTOR coord
-   info.CSOLcoord=0
    info.xoff=0.0
    info.yoff=0.0
    info.wtitle = fname+'.'+ext+' ('+strtrim(string(info.HEX_imgseq),2)+') '+segment
-   if n_elements(CSOLcoord) eq 0 then begin
-      ;no specified coord system -> use native
       widget_control, info.menuDispDetCoord,  sensitive=0
       widget_control, info.menuDispUserCoord, sensitive=1
-      info.wtitle+='  DETECT'
-   endif else if CSOLcoord eq -1 then begin
-      ; use native
-      widget_control, info.menuDispDetCoord,  sensitive=0
-      widget_control, info.menuDispUserCoord, sensitive=1
-      info.wtitle+='  DETECT'
-   endif else if CSOLcoord ne info.CSOLcoord then begin
-      ; requested a different CSOLcoord than native file -> flip
-      status = flipcoord(image=info.orig, x=(*info.data).xttag, y=(*info.data).yttag)
-      info.CSOLcoord=CSOLcoord
-      widget_control, info.menuDispDetCoord,  sensitive=1
-      widget_control, info.menuDispUserCoord, sensitive=0
-      info.wtitle+='  USER'
-   endif else begin
-      ;specified coord system same as native
-      widget_control, info.menuDispDetCoord,  sensitive=0
-      widget_control, info.menuDispUserCoord, sensitive=1
-      info.wtitle+='  DETECT'
-   endelse
    info.wtitle=info.wtitle+'  '+(*info.data).xname+' '+(*info.data).yname
    widget_control,info.top_base,tlb_set_title=info.wtitle
    csol_viewer_display, info.orig, info=info
 
    widget_control, info.menuDispReload, sensitive=1
 
-   info.disp_xtractab = 0
-   info.disp_x1dfile = 0
-   info.disp_x1duser = 0
-
 END
 
 ; =========================================================== HEX_openCSOL
 ;
-function HEX_open,info,whichrot=whichrot,nrows=nrows,ncols=ncols
+function HEX_open,info,whichrot=whichrot,nrows=nrows,ncols=ncols,verbose=verbose
+		if n_elements(verbose) ne 1 then verbose=1
 		if n_elements(nrows) ne 1 then nrows=1504L
 		if n_elements(ncols) ne 1 then ncols=2000L
 		if n_elements(whichrot) ne 1 then whichrot=1
@@ -242,8 +186,11 @@ function HEX_open,info,whichrot=whichrot,nrows=nrows,ncols=ncols
    if n_elements(info) eq 0 then return, 'Missing info variable'
 
 	instrument='CSOL'
+	message,'MADE it to HEX_open'
 	help,info,/str
-   status=readHEX(info.filename,image=orig,whichrot=whichrot)
+	stop
+
+	status=readHEX(info.filename,image=orig,whichrot=whichrot)
  ; orig is already a 2D image, clear the ttag variable
 		maxx = n_elements(orig[*,0])
 		maxy = n_elements(orig[0,*])
@@ -276,8 +223,8 @@ function HEX_open,info,whichrot=whichrot,nrows=nrows,ncols=ncols
        info.header = PTR_NEW(header, /no_copy)
 
       ; check if we have a CSOL file and enable USER/DETECT coord function
-	   widget_control, info.menuDispDetCoord,  sensitive=1
-	   widget_control, info.menuDispUserCoord, sensitive=0
+;	   widget_control, info.menuDispDetCoord,  sensitive=1
+;	   widget_control, info.menuDispUserCoord, sensitive=0
       ttnames=tag_names(*info.data)
       tpos = where(strpos(ttnames,'XNAME') ge 0, count)
       if count gt 0 then $
@@ -286,7 +233,7 @@ function HEX_open,info,whichrot=whichrot,nrows=nrows,ncols=ncols
 
       csol_viewer_display, info.orig, info=info
       widget_control, info.menuDispReload, sensitive=1
-
+	help,info,/str
    return,msg
 end
 
@@ -298,7 +245,8 @@ end
 ;
 pro csol_viewer_event,event
 
-common csol_viewer_path, fits_path, raw_path
+common csol_viewer_path, hex_path, raw_path,verbose=verbose
+   if n_elements(verbose) ne 1 then verbose=0
 
    widget_control, event.top, get_uvalue=info, /no_copy
    widget_control,event.id,get_uvalue=uvalue
@@ -337,14 +285,14 @@ common csol_viewer_path, fits_path, raw_path
      GOTO, SKIP
   ENDIF
 
-  message,/info,'UVALUE set'
   case uvalue of
+
    'OPENCSOL': begin
+		 message,/info,'UVALUE = OPENCSOL'
          widget_control,/hourglass
          if n_elements(csol_path) eq 0 then  begin
-            csol_path = CSOL_GETENV('CSOL_SURF_ROOT')
-            csol_path  ='/Users/spenton/Dropbox_CSOL_SURF/CSOL_SURF Dropbox/CSOL_SURF/2019_Mar_SURF/SURF_2019/Data/CSOL/'
-         endif
+         	csol_path=get_surf_dir(dropbox=dropbox,laspstore=laspstore)
+        endif
          file = dialog_pickfile(title='Select CSOL/SURF HEX file(s)',/must_exist, path=csol_path, $
                  filter='*.hex*', get_path=path)
          if file[0] eq '' THEN GOTO, SKIP
@@ -353,9 +301,9 @@ common csol_viewer_path, fits_path, raw_path
          instrument='CSOL'
          ; disable the event handler
          WIDGET_CONTROL, info.top_base, EVENT_FUNC=''
-         status = HEX_opencsol(info)
+         status = HEX_openCSOL(info,verbose=verbose)
          ; re-enable the event handler
-         WIDGET_CONTROL, info.top_base, EVENT_PRO='csol_viewer_EVENT'
+         WIDGET_CONTROL, info.top_base, EVENT_PRO='csol2_viewer_EVENT'
          if status ne '' then r=dialog_message(dialog_parent=info.top_base, status, /error)
          widget_control,/hourglass
       END
@@ -426,7 +374,7 @@ common csol_viewer_path, fits_path, raw_path
 
    'DISP_RELOAD' : BEGIN
          WIDGET_CONTROL, info.top_base, EVENT_FUNC=''
-         status = HEX_openCSOL(info)
+         status = HEX_openCSOL(info,verbose=verbose)
          ; re-enable the event handler
          WIDGET_CONTROL, info.top_base, EVENT_PRO='csol_viewer_EVENT'
          if status ne '' then r=dialog_message(dialog_parent=info.top_base, status, /error)
@@ -1140,7 +1088,6 @@ pro csol_viewer_display, image, select=select, info=info, reset=reset
       csol_viewer_scale, info.big_id, info.big_image, imin=info.omin, imax=info.omax, scale=info.scale_type, ncolors=info.ncolors $
    else $
       csol_viewer_scale, info.big_id, info.orig, imin=info.omin, imax=info.omax, scale=info.scale_type, ncolors=info.ncolors
-
 ;
 ; display little image
 ;
@@ -1313,7 +1260,6 @@ end
 ;
 pro csol_viewer_xyttag,x,y,to_binned=to_binned,frac=frac,xbin=xbin,ybin=ybin,xoff=xoff,yoff=yoff
 ;
-
    if n_elements(to_binned) eq 0 then to_binned = 0
    if n_elements(frac) eq 0 then frac = 0
    if n_elements(xbin) eq 0 then xbin = 1
@@ -2391,7 +2337,7 @@ pro xsection_corners,x1,y1,x2,y2,width,xcorners,ycorners,dist
    if (x2 eq x1) and (y2 eq y1) then x2 = x1+1
 
    dx = (width/2.0)*sin(theta)
-   dy = (width/2.0)*CSOL(theta)
+   dy = (width/2.0)*cos(theta)
    xcorners = [x1+dx,x2+dx,x2-dx,x1-dx]
    ycorners = [y1-dy,y2-dy,y2+dy,y1+dy]
    return
@@ -2486,15 +2432,9 @@ pro csol_viewer_ps,color=color,reversed=reversed,print=print,png=png,jpg=jpg,inf
 ; set up postscript file
 ;
    !p.font = 0
-   if info.little_nx gt 200 then begin ; assuming viewing FUV data
-      xpos1=0.0 & ypos1=0.0 & xsize1=xsize & ysize1=ysize/6.0
-      xpos2=0.7*xsize & ypos2=0.53*ysize & xsize2=0.3*xsize & ysize2=0.3*xsize
-      xpost=0.7 & ypost=0.5 & yofft=0.02667
-   endif else begin ; assuming viewing NUV data
-      xpos1=0.7*xsize & ypos1=ysize/15.0 & xsize1=0.3*xsize & ysize1=0.3*xsize
-      xpos2=0.7*xsize & ypos2=0.53*ysize & xsize2=0.3*xsize & ysize2=0.3*xsize
-      xpost=0.12 & ypost=0.2 & yofft=0.02667
-   endelse
+	xpos1=0.7*xsize & ypos1=ysize/15.0 & xsize1=0.3*xsize & ysize1=0.3*xsize
+	xpos2=0.7*xsize & ypos2=0.53*ysize & xsize2=0.3*xsize & ysize2=0.3*xsize
+	xpost=0.12 & ypost=0.2 & yofft=0.02667
    s = size(pic3) & nx = float(s(1)) & ny = float(s(2))
    rat = nx/ny
    if rat gt 745.0/515.0 then begin
@@ -2751,8 +2691,9 @@ end
 ;
 ; ==================================================================
 ;
-pro csol_viewer,image,h, file=file, FUV=fuv, NUV=nuv, PARENT=parent, RESTORE=restore, $
-    CONTRAST=contrast, wtitle=wtitle
+pro csol_viewer,image,h, file=file, PARENT=parent, RESTORE=restore, $
+    CONTRAST=contrast, wtitle=wtitle, verbose=verbose
+    if n_elements(verbose) ne 1 then verbose=1
 
    ; define a non-existing CSOL_DEF_FILE in case none were previously defined
    ; and we are running csol_viewer in "Virtual Machine" mode to prevent popup
@@ -2770,17 +2711,17 @@ pro csol_viewer,image,h, file=file, FUV=fuv, NUV=nuv, PARENT=parent, RESTORE=res
          if !version.os_family ne "Windows" then DEVICE, PSEUDO_COLOR=8
       endif
       ; if the system variable is not defined we have not read a cedar.def file
-      temp=csol_getenv("CSOL_DEF_FILE",/file)
+      ; temp=csol_getenv("CSOL_DEF_FILE",/file)
    endif
 
-    print,'CSOL_DEF_FILE is '+!CSOL_DEF_FILE
+    ;print,'CSOL_DEF_FILE is '+!CSOL_DEF_FILE
 
    ;
    ; initialization
    ;
    if size(image,/TNAME) eq 'UNDEFINED' then begin
       ; create a dummy image
-      orig = PTR_NEW(fltarr(1024, 1024), /NO_COPY)
+      orig = PTR_NEW(fltarr(2000, 1504), /NO_COPY)
    endif else if size(image,/TNAME) ne 'POINTER' then begin
       ; transform image to a pointer
       orig = PTR_NEW(image)
@@ -2805,8 +2746,8 @@ pro csol_viewer,image,h, file=file, FUV=fuv, NUV=nuv, PARENT=parent, RESTORE=res
    yoffzoom = nl/2 - (zoom_width/2)/zoom_factor
    little_down = 0
    little_window=-1
-   little_nx=200.0
-   little_ny=200.0
+   little_nx=240.0
+   little_ny=240.0
    if keyword_set(CONTRAST) then begin
       contrast = strupcase(contrast)
       if strpos(contrast,'LIN') ge 0 then begin
@@ -2836,7 +2777,6 @@ pro csol_viewer,image,h, file=file, FUV=fuv, NUV=nuv, PARENT=parent, RESTORE=res
    loadct, 0
    tek_color, 0, 12
    tvlct,rsave,gsave,bsave,/get
-
 
 ; create widget layout
 ;
@@ -2934,9 +2874,9 @@ pro csol_viewer,image,h, file=file, FUV=fuv, NUV=nuv, PARENT=parent, RESTORE=res
    menuPlotSurface  = WIDGET_BUTTON(menuToolsPlot, VALUE="Surface", UVALUE="PLOT_SURFACE")
    menuPlotContour  = WIDGET_BUTTON(menuToolsPlot, VALUE="Contour", UVALUE="PLOT_CONTOUR")
    menuPlotEncEnergy= WIDGET_BUTTON(menuToolsPlot, VALUE="Encircled Energy", UVALUE="PLOT_ENCENERGY")
-   menuPlotPHASec   = WIDGET_BUTTON(menuToolsPlot, VALUE="FUV Pulse Height", /MENU)
-   menuPlotPHAIMG   = WIDGET_BUTTON(menuPlotPHASec, VALUE="Whole Image", UVALUE="PLOT_PHA")
-   menuPlotPHABOX   = WIDGET_BUTTON(menuPlotPHASec, VALUE="Box", UVALUE="PLOT_PHA")
+   ;menuPlotPHASec   = WIDGET_BUTTON(menuToolsPlot, VALUE="FUV Pulse Height", /MENU)
+   ;menuPlotPHAIMG   = WIDGET_BUTTON(menuPlotPHASec, VALUE="Whole Image", UVALUE="PLOT_PHA")
+   ;menuPlotPHABOX   = WIDGET_BUTTON(menuPlotPHASec, VALUE="Box", UVALUE="PLOT_PHA")
 
    menuToolsGauss   = WIDGET_BUTTON(menuTools, VALUE="Gaussfit", /MENU)
    menuToolsGaussEM = WIDGET_BUTTON(menuToolsGauss, VALUE="Emission", UVALUE="GAUSS_EM")
@@ -3010,7 +2950,6 @@ pro csol_viewer,image,h, file=file, FUV=fuv, NUV=nuv, PARENT=parent, RESTORE=res
          /viewport_events)
 
    base_fuv = widget_base(top_base)
-
 ;
 ; create widget
 ;
@@ -3025,7 +2964,6 @@ pro csol_viewer,image,h, file=file, FUV=fuv, NUV=nuv, PARENT=parent, RESTORE=res
    widget_control,zoom_window,get_value=zoom_id
    widget_control,little_window,get_value=little_id
    WIDGET_CONTROL, top_base, TLB_GET_SIZE=top_base_windowSize
-
    ;
    ; the variable data will replace the old CSOL_timetag_data COMMON BLOCK
    data = { $
@@ -3114,7 +3052,6 @@ pro csol_viewer,image,h, file=file, FUV=fuv, NUV=nuv, PARENT=parent, RESTORE=res
    info.top_base_windowSize=windowSize
    WIDGET_CONTROL, top_base, SET_UVALUE=info
    xmanager,'csol_viewer',top_base,/no_block
-
    ; if filename was passed, open file and display data
    if n_elements(file) ne 0 then begin
       filename = file
@@ -3126,15 +3063,14 @@ pro csol_viewer,image,h, file=file, FUV=fuv, NUV=nuv, PARENT=parent, RESTORE=res
          ; we have a FITS file
          ; disable the event handler
          WIDGET_CONTROL, info.top_base, EVENT_FUNC=''
-         status = HEX_openCSOL(info)
-         print,'ping'
+         status = HEX_openraw(info)
          ; re-enable the event handler
-         WIDGET_CONTROL, info.top_base, EVENT_PRO='csol_viewer_EVENT'
+         WIDGET_CONTROL, info.top_base, EVENT_PRO='cos_viewer_EVENT'
          if status ne '' then r=dialog_message(dialog_parent=info.top_base, status, /error)
          widget_control,/hourglass
          WIDGET_CONTROL, info.top_base, SET_UVALUE=info
       ENDIF ELSE BEGIN
-         ; we do not have a fits file, assume CSOL_RAW file
+         ; we do not have a fits file, assume COS_RAW file
          status = HEX_openraw(info)
          if status ne '' then r=dialog_message(dialog_parent=top_base,status,/error)
       ENDELSE
@@ -3145,25 +3081,13 @@ pro csol_viewer,image,h, file=file, FUV=fuv, NUV=nuv, PARENT=parent, RESTORE=res
           r=dialog_message(dialog_parent=top_base, 'Wrong datatype passed to the program',/error)
       endif else begin
          s=size(*orig)
-         if s[1] eq s[2] then begin
-            ; assume NUV data
-            little_nx=200.0
-            little_ny=200.0
-            ; destroy previous instance of window before creating a new one
-            if little_window ne -1 then widget_control, little_window, /DESTROY
-            little_window = widget_draw(base_nuv,uvalue='LITTLE_WINDOW',retain=2, $
-               xsize=little_nx,ysize=little_ny,/button_events,/motion)
-            widget_control,little_window,get_value=little_id
-         endif else begin
-            ; assume FUV data
-            little_nx = 752.0
-            little_ny = 47.0
-            ; destroy previous instance of window before creating a new one
-            if little_window ne -1 then widget_control, little_window, /DESTROY
-            little_window = widget_draw(base_fuv,uvalue='LITTLE_WINDOW',retain=2, $
-               xsize=little_nx,ysize=little_ny,/button_events,/motion)
-            widget_control,little_window,get_value=little_id
-         endelse
+		little_nx=240.0
+		little_ny=240.0
+		; destroy previous instance of window before creating a new one
+		if little_window ne -1 then widget_control, little_window, /DESTROY
+		little_window = widget_draw(base_nuv,uvalue='LITTLE_WINDOW',retain=2, $
+		   xsize=little_nx,ysize=little_ny,/button_events,/motion)
+		widget_control,little_window,get_value=little_id
          info.little_nx=little_nx
          info.little_ny=little_ny
          info.little_window=little_window
